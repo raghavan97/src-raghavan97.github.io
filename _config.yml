@@ -21,6 +21,10 @@ author:
 version:             1.0.0
 
 # Gems
-gems: [jekyll-paginate, jekyll-terminal]
+gems: [jekyll-paginate]
 paginate: 5
 paginate_path: "page:num"
+
+gems: 
+    - jekyll-paginate
+    - jekyll-terminal
