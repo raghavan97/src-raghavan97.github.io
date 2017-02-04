@@ -4,122 +4,91 @@ title: Getter and Setter
 ---
 
 
-<div class="message">
-  Howdy! This is an example blog post that shows several types of HTML content supported in this theme.
-</div>
+Recently we had come across an issue in our project, where one of the instance variables in a class was found to be corrupted. 
 
-Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. *Aenean eu leo quam.* Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.
+It was hard tracking the assignment of value to the instance variable because 
+* There were a number of places in the code base where the variable was getting assigned 
+* Most of the assignments were from other variables in the code. 
+    
+The regular python debugger (pdb) does not have **watch point** support which could have simplified in catching the suspect. After googling around, it was not clear as to whether any of the python debuggers had the support for watch points.
 
-> Curabitur blandit tempus porttitor. Nullam quis risus eget urna mollis ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.
+We discussed a few ways of catching the culprit. The one that I am going to show you now caught my attention, since it was clean and smart.
 
-Etiam porta **sem malesuada magna** mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.
+## Problem
 
-## Inline HTML elements
+Here is the simulation of the same problem.
 
-HTML defines a long list of available inline tags, a complete list of which can be found on the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/HTML/Element).
+We have a class BankCustomer, which has 3 attributes *name*, *id* and *balance*. An instance of BankCustomer is created with an initial value of the *balance* as 10000. The value of balance has been changed many times to simulate the assignments in different modules.
 
-- **To bold text**, use `<strong>`.
-- *To italicize text*, use `<em>`.
-- Abbreviations, like <abbr title="HyperText Markup Langage">HTML</abbr> should use `<abbr>`, with an optional `title` attribute for the full phrase.
-- Citations, like <cite>&mdash; Mark otto</cite>, should use `<cite>`.
-- <del>Deleted</del> text should use `<del>` and <ins>inserted</ins> text should use `<ins>`.
-- Superscript <sup>text</sup> uses `<sup>` and subscript <sub>text</sub> uses `<sub>`.
-
-Most of these elements are styled by browsers with few modifications on our part.
-
-## Heading
-
-Vivamus sagittis lacus vel augue rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-
-### Code
-
-Cum sociis natoque penatibus et magnis dis `code element` montes, nascetur ridiculus mus.
 
 {% highlight python %}
-def hello():
-    print 'hello {}'.format('bs')
-    return 34
+import inspect
+
+class BankCustomer(object):
+    def __init__(self, name, cust_id, balance):
+        self.name = name
+        self.cust_id = cust_id
+        self._balance = balance
+
+
+c1 = BankCustomer('Amit',1,10000)
+c1.balance = 8000
+c1.balance = 3000
+c1.balance = 5000
+c1.balance = 15000
+c1.balance = 25000
+c1.balance = 65000
+
 {% endhighlight %}
 
-Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.
+The idea is to catch the place where an assignment of 5000 takes place.
+
+## Solution
+
+The way we solve this problem is 
+
+* Make *balance* a property of the class
+* In the property setter, we print the caller branching on the condition of interest
+
+We make use of the inspect module **stack()** call to get the caller information.
+
+The following shows the modified code for solving the issue.
+
+{% highlight python %}
+import inspect
+
+class BankCustomer(object):
+    def __init__(self, name, cust_id, balance):
+        self.name = name
+        self.cust_id = cust_id
+        self._balance = balance
+
+    @property
+    def balance(self):
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):
+        if self._balance == 5000:
+            frame, filename, line_num, func, source_code, source_index = inspect.stack()[1]
+            code = source_code[source_index].strip()
+            msg = 'balance=5000 at {}:{} code="{}"'.format(filename,line_num, code)
+            print(msg)
+        self._balance = value
+
+
+c1 = BankCustomer('Amit',1,10000)
+c1.balance = 8000
+c1.balance = 3000
+c1.balance = 5000
+c1.balance = 15000
+c1.balance = 25000
+c1.balance = 65000
+{% endhighlight %}
+
+We run the example. We can see a print that identifies the culprit. The print shows the next executable statement after the desired assignment.
 
 {% terminal %}
-$ echo "Hello world!"
-Hello world
-$ date
-Sun Dec 14 09:56:26 CET 2014
+$ python example.py
+balance=5000 at try.py:27 code="c1.balance = 15000"
 {% endterminal %}
-
-
-### Lists
-
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
-
-* Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-* Donec id elit non mi porta gravida at eget metus.
-* Nulla vitae elit libero, a pharetra augue.
-
-Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.
-
-1. Vestibulum id ligula porta felis euismod semper.
-2. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-3. Maecenas sed diam eget risus varius blandit sit amet non magna.
-
-Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.
-
-<dl>
-  <dt>HyperText Markup Language (HTML)</dt>
-  <dd>The language used to describe and define the content of a Web page</dd>
-
-  <dt>Cascading Style Sheets (CSS)</dt>
-  <dd>Used to describe the appearance of Web content</dd>
-
-  <dt>JavaScript (JS)</dt>
-  <dd>The programming language used to build advanced Web sites and applications</dd>
-</dl>
-
-Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Nullam quis risus eget urna mollis ornare vel eu leo.
-
-### Tables
-
-Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Upvotes</th>
-      <th>Downvotes</th>
-    </tr>
-  </thead>
-  <tfoot>
-    <tr>
-      <td>Totals</td>
-      <td>21</td>
-      <td>23</td>
-    </tr>
-  </tfoot>
-  <tbody>
-    <tr>
-      <td>Alice</td>
-      <td>10</td>
-      <td>11</td>
-    </tr>
-    <tr>
-      <td>Bob</td>
-      <td>4</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <td>Charlie</td>
-      <td>7</td>
-      <td>9</td>
-    </tr>
-  </tbody>
-</table>
-
-Nullam id dolor id nibh ultricies vehicula ut id elit. Sed posuere consectetur est at lobortis. Nullam quis risus eget urna mollis ornare vel eu leo.
-
------
-
-Want to see something else added? <a href="https://github.com/poole/poole/issues/new">Open an issue.</a>
