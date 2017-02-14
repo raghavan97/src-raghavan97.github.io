@@ -16,7 +16,7 @@ This blog is about a directory structure that works well on the above counts.
 
 A project can consist of multiple python modules. Each module might have one or more python source files. A sample project for demonstrating the proposed directory structure is shown below as the output of **tree** command.
 
-<img src="images/dir.png" alt="hi" class="inline" />
+<img src="/images/dir.png" alt="hi" class="inline" />
 
 The project contains the following directories and files
 
@@ -45,7 +45,7 @@ In <a href="https://github.com/raghavan97/projdir/blob/master/setup.py">setup.py
 Here is how we build the package, install it and run the app.
 
 
-<img src="images/packaging.png" alt="hi" class="inline" />
+<img src="/images/packaging.png" alt="hi" class="inline" />
 
 The log messages indicate the time, severity, and also the origin of the message in terms of the source file and line number as follows 
 {% highlight python %}

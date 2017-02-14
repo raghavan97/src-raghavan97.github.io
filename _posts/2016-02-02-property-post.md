@@ -30,7 +30,7 @@ class BankCustomer(object):
     def __init__(self, name, cust_id, balance):
         self.name = name
         self.cust_id = cust_id
-        self._balance = balance
+        self.balance = balance
 
 
 c1 = BankCustomer('Amit',1,10000)
