@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Property in Python Class
+comments: true
 ---
 
 

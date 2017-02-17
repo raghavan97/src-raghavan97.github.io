@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Python Application Directory Structure
+comments: true
 ---
 One of the things that we need to get right for a python application is the way the project files are organized.  
 
