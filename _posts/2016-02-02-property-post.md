@@ -2,6 +2,8 @@
 layout: post
 title: Property in Python Class
 comments: true
+abs_url: https://raghavan97.github.io/2016/02/02/property-post
+disqus_id: c738c80b-caf2-4b6f-9f99-f30b739976f2
 ---
 
 
