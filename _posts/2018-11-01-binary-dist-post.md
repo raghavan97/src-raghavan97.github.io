@@ -24,7 +24,7 @@ A sample wheel file name is minty-0.0.4-cp27-cp27mu-linux_x86_64.whl
 
 For having a single wheel file to cater to all the variants of linux, a os tag of *manylinux1* is used.
 
-To generate a wheel file for the *manylinux1* , we need to generate the wheel file using a special docker container avaliable at **quay.io/pypa/manylinux1_x86_64**.
+To generate a wheel file for the *manylinux1* , we need to generate the wheel file using a special docker container available at **quay.io/pypa/manylinux1_x86_64**.
 
 This docker container allows us to generate 2 wheels one for the narrow unicode(abi tag-cp27m) and wide unicode (abi tag-cp27mu)
 
@@ -91,10 +91,8 @@ auditwheel is installed in a python3 environment using pip install auditwheel.  
 $ pip install auditwheel
 Collecting auditwheel
   Using cached https://files.pythonhosted.org/packages/ac/c8/6b5e135684b8617eff1c2ffe6ac509837de904b852df682d1cd1c15235e8/auditwheel-1.9.0-py3-none-any.whl
-Requirement already satisfied: wheel>=0.26.0 in ./.virtualenvs/py3/lib/python3.4/site-packages (from auditwheel) (0.31.0)
-Requirement already satisfied: setuptools in ./.virtualenvs/py3/lib/python3.4/site-packages (from auditwheel) (40.5.0)
-Requirement already satisfied: typing>=3.5.0.1 in ./.virtualenvs/py3/lib/python3.4/site-packages (from auditwheel) (3.6.6)
-Requirement already satisfied: pyelftools>=0.24 in ./.virtualenvs/py3/lib/python3.4/site-packages (from auditwheel) (0.25)
+...
+...
 Installing collected packages: auditwheel
 Successfully installed auditwheel-1.9.0
 
