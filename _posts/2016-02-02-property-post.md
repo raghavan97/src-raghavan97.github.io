@@ -59,53 +59,11 @@ We make use of the <a href="https://docs.python.org/2/library/inspect.html">insp
 
 The following shows the modified code for solving the issue.
 
-{% highlight python %}
-import inspect
-
-class BankCustomer(object):
-    def __init__(self, name, cust_id, balance):
-        self.name = name
-        self.cust_id = cust_id
-        self._balance = balance
-
-    @property
-    def balance(self):
-        return self._balance
-
-    @balance.setter
-    def balance(self, value):
-        if self._balance == 5000:
-            (
-                frame,
-                filename,
-                line_num, 
-                func, 
-                source_code,
-                source_index
-            ) = inspect.stack()[1]
-            code = source_code[source_index].strip()
-            msg = (
-                'assigned at {}:{} code="{}"'.format(
-                    filename,line_num, code
-                )
-            )
-            print(msg)
-        self._balance = value
-
-
-c1 = BankCustomer('Amit',1,10000)
-c1.balance = 8000
-c1.balance = 3000
-c1.balance = 5000
-c1.balance = 15000
-c1.balance = 25000
-c1.balance = 65000
-
-{% endhighlight %}
+<script src="https://gist.github.com/raghavan97/a750f606401a354299b13538c29737fa.js"></script>
 
 We run the example. We can see a print that identifies the culprit. The print shows the *next executable statement* after the unacceptable assignment.
 
 {% terminal %}
-$ python example.py
+$ python try.py
 assigned at try.py:38 code="c1.balance = 15000"
 {% endterminal %}
